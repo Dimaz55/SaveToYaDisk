@@ -29,15 +29,20 @@ class YaUploader:
         prms = {'path': self.path, 'overwrite': 'true'}
         response = requests.get(url, headers=self.get_headers(), params=prms)
         try:
-            return response.json()['href']
+            url_to_upload = response.json()['href']
         except KeyError:
             print('Ошибка:', response.json()['message'])
             return None
 
+        return url_to_upload
+
     def upload(self, file_path: str):
+        print('Получение ссылки для загрузки...')
         if self._get_upload_link(file_path):
             response = requests.put(self._get_upload_link(file_path), data=open(file_path, 'rb'))
+            print('Ссылка успешно получена.')
             return response.status_code
+        print('Ошибка получения ссылки.')
         return 0
 
 
@@ -48,7 +53,6 @@ if __name__ == '__main__':
         my_token = f.readline().strip()
     uploader = YaUploader(my_token)
     result = uploader.upload(path_to_file)
-    print(result)
-    if result == '201':
+    if result == 201:
         loader()
         print('Успешно загружено')
