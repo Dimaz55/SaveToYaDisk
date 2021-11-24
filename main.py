@@ -40,8 +40,9 @@ class YaUploader:
     def upload(self, file_path: str) -> int:
         print('Получение ссылки для загрузки...')
         if self._get_upload_link(file_path):
-            response = requests.put(self._get_upload_link(file_path),
-                                    data=open(file_path, 'rb'))
+            with open(file_path, 'rb') as f:
+                response = requests.put(self._get_upload_link(file_path),
+                                        files={"file": f})
             print('Ссылка успешно получена.')
             return response.status_code
         print('Ошибка получения ссылки.')
